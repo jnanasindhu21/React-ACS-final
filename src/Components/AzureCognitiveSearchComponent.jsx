@@ -2,6 +2,15 @@ import React, { useEffect } from 'react';
 
 const AzureCognitiveSearchComponent = () => {
    useEffect(() => {
+
+    function generateSasUrl(path) {
+      const sasToken = 'sp=r&st=2023-09-10T14:15:54Z&se=2023-09-19T22:15:54Z&spr=https&sv=2022-11-02&sr=c&sig=D838SchF1tOstb8lceZWYDNG%2BfDO%2B0hxg0iwGhaFVWY%3D'; // Replace with your SAS token
+        const sasUrl = `${path}?${sasToken}`;
+        const link = document.createElement('a');
+        link.href = sasUrl;
+        link.target = '_blank'; // Opens the URL in a new tab/window
+        link.click();
+    }
     // Initialize and connect to your search service
     var automagic = new AzSearch.Automagic({
       index: "azureblob-index-metadata",
@@ -10,21 +19,23 @@ const AzureCognitiveSearchComponent = () => {
       dnsSuffix: "search.windows.net"
     });
 
-    function generateSasUrl(path) {
-      const sasToken = 'sp=r&st=2023-09-06T16:46:39Z&se=2023-09-08T00:46:39Z&spr=https&sv=2022-11-02&sr=c&sig=g6HQLgBkOm%2F5bXxvZ%2FvaVxgMai98gI4ZoQbQeQKiAU0%3D'; // Replace with your SAS token
-      const sasUrl = `${path}?${sasToken}`;
-      window.open(sasUrl, '_blank');
-    }
+    
 
     const resultTemplate = `
-    <div className="col-xs-12 col-sm-9 col-md-9">
-        <h4>{{metadata_storage_name}}</h4>
-        <div className="resultDescription">{{metadata_storage_path}}</div>
-        <button onclick="generateSasUrl('{{metadata_storage_path}}')">Open</button>
-        <!-- Add a placeholder for displaying the SAS URL -->
-        <p id="sasUrl"></p>
-    </div>
-  `;
+      <div className="container">
+        <div className="row">
+          <div className="col-sm">
+            <div className="card custom-card">
+                <div className="card-body">
+                  <h5 className="card-title"><span className="font-weight-bold">File Name: </span>{{metadata_storage_name}}</h5>
+                  <p className="card-text resultDescription"><span>File Path: </span>{{{metadata_storage_path}}}</p><br>
+                  <button onClick="generateSasUrl('{{metadata_storage_path}}')">Open</button
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    `;
 
     // Add the results view using the template defined above
     automagic.addResults("results", {
@@ -38,7 +49,7 @@ const AzureCognitiveSearchComponent = () => {
     automagic.addSearchBox("searchBox");
 
     // Adds a button to clear any applied filters
-    automagic.addClearFiltersButton("clearFilters");
+    
   }, []);
  
   return (
@@ -67,24 +78,21 @@ const AzureCognitiveSearchComponent = () => {
             </div>
       </nav>
       <div className="container-fluid">
-      <div className="row">
-                <div id="facetPanel" className="col-sm-3 col-md-3 sidebar collapse">
-                    <div id="clearFilters"></div>
-                    <ul className="nav nav-sidebar">
-                        <div className="panel panel-primary behclick-panel">
-
+      <div class="row">
+                <div class="col-sm-12 col-md-12 results_section">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div id="results" class="row placeholders text-center"></div>
                         </div>
-                    </ul>
-                </div>
-                <div className="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 results_section">
-                    <div id="results" className="row placeholders">
                     </div>
-                    <div id="pager" className="row">
+                    <div class="container justify-content-center align-items-center">
+                        <div id="pager" class="row"></div>
                     </div>
                 </div>
             </div>
+            </div>
       </div>
-    </div>
+   
   );
 };
 
